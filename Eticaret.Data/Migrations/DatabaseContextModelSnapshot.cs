@@ -22,6 +22,58 @@ namespace Eticaret.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Eticaret.Core.Entities.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("AddressGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("AppUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Disctrict")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsBillingAddress")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeliveryAddress")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OpenAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Adresses");
+                });
+
             modelBuilder.Entity("Eticaret.Core.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
@@ -30,10 +82,8 @@ namespace Eticaret.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreateDate")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -80,14 +130,14 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = "2025-03-16 01:53:17.4551823",
+                            CreateDate = new DateTime(2025, 4, 7, 21, 5, 43, 116, DateTimeKind.Local).AddTicks(9656),
                             Email = "admin@eticaret.com",
                             IsActive = true,
                             IsAdmin = true,
                             Name = "Test",
                             Password = "123456",
                             Surname = "User",
-                            UserGuid = new Guid("8030d1a3-ff2a-4d76-9114-b96f5d9c42e6"),
+                            UserGuid = new Guid("86b1c7f5-2fd5-4f9a-98cc-ff1a97dc74ae"),
                             UserName = "Admin"
                         });
                 });
@@ -169,7 +219,7 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 3, 16, 1, 53, 17, 458, DateTimeKind.Local).AddTicks(1076),
+                            CreateDate = new DateTime(2025, 4, 7, 21, 5, 43, 119, DateTimeKind.Local).AddTicks(7383),
                             IsActive = true,
                             IsTopMenu = true,
                             Name = "Elektronik",
@@ -179,7 +229,7 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreateDate = new DateTime(2025, 3, 16, 1, 53, 17, 458, DateTimeKind.Local).AddTicks(2075),
+                            CreateDate = new DateTime(2025, 4, 7, 21, 5, 43, 119, DateTimeKind.Local).AddTicks(8458),
                             IsActive = true,
                             IsTopMenu = true,
                             Name = "Bilgisayar",
@@ -239,8 +289,7 @@ namespace Eticaret.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(750)
-                        .HasColumnType("nvarchar(750)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
                         .HasMaxLength(100)
@@ -345,6 +394,15 @@ namespace Eticaret.Data.Migrations
                     b.ToTable("Sliders");
                 });
 
+            modelBuilder.Entity("Eticaret.Core.Entities.Address", b =>
+                {
+                    b.HasOne("Eticaret.Core.Entities.AppUser", "AppUser")
+                        .WithMany("Addresses")
+                        .HasForeignKey("AppUserId");
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Eticaret.Core.Entities.Product", b =>
                 {
                     b.HasOne("Eticaret.Core.Entities.Brand", "Brand")
@@ -358,6 +416,11 @@ namespace Eticaret.Data.Migrations
                     b.Navigation("Brand");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Eticaret.Core.Entities.AppUser", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 
             modelBuilder.Entity("Eticaret.Core.Entities.Brand", b =>
