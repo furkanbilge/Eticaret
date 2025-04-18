@@ -4,6 +4,7 @@ using Eticaret.WebUI.Models;
 using Microsoft.AspNetCore.Authentication; //login
 using Microsoft.AspNetCore.Authorization; //login
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Eticaret.WebUI.Controllers
@@ -17,10 +18,12 @@ namespace Eticaret.WebUI.Controllers
         //    _context = context;
         //}
         private readonly IService<AppUser> _service;
+        private readonly IService<Order> _serviceOrder;
 
-        public AccountController(IService<AppUser> service)
+        public AccountController(IService<AppUser> service, IService<Order> serviceOrder)
         {
             _service = service;
+            _serviceOrder = serviceOrder;
         }
 
         [Authorize]
@@ -45,12 +48,12 @@ namespace Eticaret.WebUI.Controllers
         [HttpPost, Authorize]
         public async Task<IActionResult> IndexAsync(UserEditViewModel model)
         {
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
                 try
                 {
                     AppUser user = await _service.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
-                    if (user is not null) 
+                    if (user is not null)
                     {
                         user.Email = model.Email;
                         user.Name = model.Name;
@@ -67,13 +70,26 @@ namespace Eticaret.WebUI.Controllers
                             //await MailHelper.SendMailAsync(contact); //mail gönderme
                             return RedirectToAction("Index");
                         }
-                    }                    
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("","Hata Oluştu!");
+                    ModelState.AddModelError("", "Hata Oluştu!");
                 }
             }
+            return View(model);
+        }
+        [Authorize]
+        public async Task<IActionResult> MyOrders()
+        {
+            AppUser user = await _service.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+            if (user is null)
+            {
+                await HttpContext.SignOutAsync();
+                return RedirectToAction("SignIn");
+            }
+            var model = _serviceOrder.GetQueryable().Where(s => s.AppUserId == user.Id).Include(o=>o.OrderLines).ThenInclude(p=>p.Product);
+
             return View(model);
         }
         public IActionResult SignIn()

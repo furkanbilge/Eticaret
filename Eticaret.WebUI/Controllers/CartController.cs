@@ -14,12 +14,14 @@ namespace Eticaret.WebUI.Controllers
         private readonly IService<Product> _serviceProduct;
         private readonly IService<Address> _serviceAddress;
         private readonly IService<AppUser> _serviceAppUser;
+        private readonly IService<Order> _serviceOrder;
 
-        public CartController(IService<Product> serviceProduct, IService<Address> serviceAddress, IService<AppUser> serviceAppUser)
+        public CartController(IService<Product> serviceProduct, IService<Address> serviceAddress, IService<AppUser> serviceAppUser, IService<Order> serviceOrder)
         {
             _serviceProduct = serviceProduct;
             _serviceAddress = serviceAddress;
             _serviceAppUser = serviceAppUser;
+            _serviceOrder = serviceOrder;
         }
         public IActionResult Index()
         {
@@ -70,7 +72,7 @@ namespace Eticaret.WebUI.Controllers
         {
             var cart = GetCart();
             var appUser = await _serviceAppUser.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
-            if (appUser != null)
+            if (appUser == null)
             {
                 return RedirectToAction("SignIn", "Account");
             }
@@ -82,6 +84,76 @@ namespace Eticaret.WebUI.Controllers
                 Addresses = addresses
             };
             return View(model);
+        }
+        [Authorize, HttpPost]
+        public async Task<IActionResult> CheckOut(string CardNumber, string CardMonth, string CardYear, string CVV, string DeliveryAddress, string BillingAddress)
+        {
+            var cart = GetCart();
+            var appUser = await _serviceAppUser.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+            if (appUser == null)
+            {
+                return RedirectToAction("SignIn", "Account");
+            }
+            var addresses = await _serviceAddress.GetAllAsync(a => a.AppUserId == appUser.Id && a.IsActive);
+            var model = new CheckOutViewModel()
+            {
+                CartProducts = cart.CartLines,
+                TotalPrice = cart.TotalPrice(),
+                Addresses = addresses
+            };
+            if (string.IsNullOrWhiteSpace(CardNumber) || string.IsNullOrWhiteSpace(CardMonth) || string.IsNullOrWhiteSpace(CardYear) || string.IsNullOrWhiteSpace(CVV) || string.IsNullOrWhiteSpace(DeliveryAddress) || string.IsNullOrWhiteSpace(BillingAddress))
+            {
+                return View(model);
+            }
+            var teslimatAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == DeliveryAddress);
+            var faturaAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == BillingAddress);
+
+            // Ödeme çekme işlemi
+
+            var siparis = new Order
+            {
+                AppUserId = appUser.Id,
+                BillingAddress = BillingAddress,
+                CustomerId = appUser.UserGuid.ToString(),
+                DeliveryAddress = DeliveryAddress,
+                OrderDate = DateTime.Now,
+                TotalPrice = cart.TotalPrice(),
+                OrderNumber = Guid.NewGuid().ToString(),
+                OrderLines = []
+            };
+
+            foreach (var item in cart.CartLines)
+            {
+                siparis.OrderLines.Add(new OrderLine
+                {
+                    ProductId = item.Product.Id,
+                    OrderId = siparis.Id,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Product.Price
+                });
+            }
+
+            try
+            {
+                await _serviceOrder.AddAsync(siparis);
+                var sonuc = await _serviceOrder.SaveChangesAsync();
+                if (sonuc > 0)
+                {
+                    HttpContext.Session.Remove("Cart");
+                    return RedirectToAction("Thanks");
+                }
+            }
+            catch (Exception)
+            {
+                TempData["Message"] = "Hata Oluştu!";
+            }
+
+            return View(model);
+        }
+        public IActionResult Thanks()
+        {
+         
+            return View();
         }
         private CartService GetCart()
         {
