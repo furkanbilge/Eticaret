@@ -21,13 +21,13 @@ namespace Eticaret.WebUI.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound("Geçersiz İstek!");
             }
 
-            var news = await _service.GetAsync(m => m.Id == id);
+            var news = await _service.GetAsync(m => m.Id == id && m.IsActive);
             if (news == null)
             {
-                return NotFound();
+                return NotFound("Kampanyanın Süresi Sona Erdi!");
             }
 
             return View(news);

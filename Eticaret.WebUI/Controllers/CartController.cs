@@ -112,8 +112,8 @@ namespace Eticaret.WebUI.Controllers
             var siparis = new Order
             {
                 AppUserId = appUser.Id,
-                BillingAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}",
-                DeliveryAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}",
+                BillingAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}", // BillingAddress,
+                DeliveryAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}", //DeliveryAddress,
                 CustomerId = appUser.UserGuid.ToString(),
                 OrderDate = DateTime.Now,
                 TotalPrice = cart.TotalPrice(),
