@@ -10,7 +10,7 @@ namespace Eticaret.Core.Entities
         [Display(Name = "İl"), StringLength(50), Required(ErrorMessage = "{0} Alanı Zorunludur!")]
         public string City { get; set; }
         [Display(Name = "İlçe"), StringLength(50), Required(ErrorMessage = "{0} Alanı Zorunludur!")]
-        public string Disctrict { get; set; }
+        public string District { get; set; }
         [Display(Name = "Açık Adres"),DataType(DataType.MultilineText), Required(ErrorMessage = "{0} Alanı Zorunludur!")]
         public string OpenAddress { get; set; }
         [Display(Name = "Aktif")]

@@ -105,7 +105,7 @@
                                     <div class="card-header">
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                                <input class="form-check-input" type="radio" name="DeliveryAddress" values="@item.AddressGuid" @(item.IsDeliveryAddress ? "checked" : "")) />
+                                                <input class="form-check-input" type="radio" name="DeliveryAddress" values="@item.AddressGuid" @(item.IsDeliveryAddress ? "checked" : "") />
                                                 @item.Title
                                             </label>
                                         </div>
@@ -113,7 +113,7 @@
 
                                     <div class="card-body">
                                         <p>
-                                            @item.OpenAddress @item.Disctrict @item.City
+                                            @item.OpenAddress @item.District @item.City
                                         </p>
 
                                         <div class="form-check">

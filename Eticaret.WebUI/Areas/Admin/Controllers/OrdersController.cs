@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eticaret.Core.Entities;
 using Eticaret.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Eticaret.WebUI.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Policy = "AdminPolicy")]
-    public class AddressesController : Controller
+    [Area("Admin"), Authorize(Policy = "AdminPolicy")]
+    public class OrdersController : Controller
     {
         private readonly DatabaseContext _context;
 
-        public AddressesController(DatabaseContext context)
+        public OrdersController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: Admin/Addresses
+        // GET: Admin/Orders
         public async Task<IActionResult> Index()
         {
-            var databaseContext = _context.Adresses.Include(a => a.AppUser);
-            return View(await databaseContext.ToListAsync());
+            return View(await _context.Orders.Include(u => u.AppUser).ToListAsync());
         }
 
-        // GET: Admin/Addresses/Details/5
+        // GET: Admin/Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,40 +31,37 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Adresses
-                .Include(a => a.AppUser)
+            var order = await _context.Orders.Include(u => u.AppUser).Include(o => o.OrderLines).ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (address == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(address);
+            return View(order);
         }
 
-        // GET: Admin/Addresses/Create
+        // GET: Admin/Orders/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.AppUsers, "Id", "Email");
             return View();
         }
 
-        // POST: Admin/Addresses/Create
+        // POST: Admin/Orders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Address address)
+        public async Task<IActionResult> Create(Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(address);
+                _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.AppUsers, "Id", "Email", address.AppUserId);
-            return View(address);
+            return View(order);
         }
 
-        // GET: Admin/Addresses/Edit/5
+        // GET: Admin/Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -74,23 +69,22 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Adresses.FindAsync(id);
-            if (address == null)
+            var order = await _context.Orders.Include(u => u.AppUser).Include(o => o.OrderLines).ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (order == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.AppUsers, "Id", "Email", address.AppUserId);
-            return View(address);
+            ViewBag.OrderStates = new SelectList(Enum.GetValues<EnumOrderState>());
+            return View(order);
         }
 
-        // POST: Admin/Addresses/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Admin/Orders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,City,Disctrict,OpenAddress,IsActive,IsBillingAddress,IsDeliveryAddress,AppUserId")] Address address)
+        public async Task<IActionResult> Edit(int id, Order order)
         {
-            if (id != address.Id)
+            if (id != order.Id)
             {
                 return NotFound();
             }
@@ -99,27 +93,27 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(address);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AddressExists(address.Id))
+                    if (!OrderExists(order.Id))
                     {
                         return NotFound();
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError("","Hata Oluştu!");
                     }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.AppUsers, "Id", "Email", address.AppUserId);
-            return View(address);
+            ViewBag.OrderStates = new SelectList(Enum.GetValues<EnumOrderState>());
+            return View(order);
         }
 
-        // GET: Admin/Addresses/Delete/5
+        // GET: Admin/Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,35 +121,34 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Adresses
-                .Include(a => a.AppUser)
+            var order = await _context.Orders.Include(u => u.AppUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (address == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(address);
+            return View(order);
         }
 
-        // POST: Admin/Addresses/Delete/5
+        // POST: Admin/Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var address = await _context.Adresses.FindAsync(id);
-            if (address != null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
             {
-                _context.Adresses.Remove(address);
+                _context.Orders.Remove(order);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AddressExists(int id)
+        private bool OrderExists(int id)
         {
-            return _context.Adresses.Any(e => e.Id == id);
+            return _context.Orders.Any(e => e.Id == id);
         }
     }
 }

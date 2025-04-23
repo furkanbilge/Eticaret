@@ -2,9 +2,6 @@
 using Eticaret.Service.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace Eticaret.WebUI.Controllers
 {
@@ -69,7 +66,7 @@ namespace Eticaret.WebUI.Controllers
             var model = await _serviceAddress.GetAsync(u => u.AddressGuid.ToString() == id && u.AppUserId == appUser.Id);
             if (model == null)
             {
-                return NotFound("Adres Bilgileri Bulunamadı! Oturumunuzu Kapatıp Lütfen Tekrar Giriş Yapın!");
+                return NotFound("Adres Bilgileri Bulunamadı!");
             }
             return View(model);
         }
@@ -88,7 +85,7 @@ namespace Eticaret.WebUI.Controllers
                 return NotFound("Adres Bilgileri Bulunamadı!");
             }
             model.Title = adress.Title;
-            model.Disctrict = adress.Disctrict;
+            model.District = adress.District;
             model.City = adress.City;
             model.OpenAddress = adress.OpenAddress;
             model.IsDeliveryAddress = adress.IsDeliveryAddress;

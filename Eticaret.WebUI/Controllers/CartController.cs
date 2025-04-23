@@ -5,7 +5,6 @@ using Eticaret.WebUI.ExtensionMethods;
 using Eticaret.WebUI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Eticaret.WebUI.Controllers
 {
@@ -105,20 +104,21 @@ namespace Eticaret.WebUI.Controllers
             {
                 return View(model);
             }
-            var teslimatAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == DeliveryAddress);
             var faturaAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == BillingAddress);
+            var teslimatAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == DeliveryAddress);
 
             // Ödeme çekme işlemi
 
             var siparis = new Order
             {
                 AppUserId = appUser.Id,
-                BillingAddress = BillingAddress,
+                BillingAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}",
+                DeliveryAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}",
                 CustomerId = appUser.UserGuid.ToString(),
-                DeliveryAddress = DeliveryAddress,
                 OrderDate = DateTime.Now,
                 TotalPrice = cart.TotalPrice(),
                 OrderNumber = Guid.NewGuid().ToString(),
+                OrderState = 0,
                 OrderLines = []
             };
 
@@ -152,7 +152,7 @@ namespace Eticaret.WebUI.Controllers
         }
         public IActionResult Thanks()
         {
-         
+
             return View();
         }
         private CartService GetCart()

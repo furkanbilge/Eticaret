@@ -4,6 +4,7 @@ using Eticaret.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eticaret.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250421165932_OrderStateEklendi")]
+    partial class OrderStateEklendi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -44,7 +47,7 @@ namespace Eticaret.Data.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("District")
+                    b.Property<string>("Disctrict")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -130,14 +133,14 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 4, 23, 16, 58, 41, 910, DateTimeKind.Local).AddTicks(7488),
+                            CreateDate = new DateTime(2025, 4, 21, 19, 59, 31, 335, DateTimeKind.Local).AddTicks(2714),
                             Email = "admin@eticaret.com",
                             IsActive = true,
                             IsAdmin = true,
                             Name = "Test",
                             Password = "123456",
                             Surname = "User",
-                            UserGuid = new Guid("4bd8b364-583f-40af-b2a3-137ae9b3f8cd"),
+                            UserGuid = new Guid("b703d4f4-4b07-4d24-b622-599982a719d8"),
                             UserName = "Admin"
                         });
                 });
@@ -219,7 +222,7 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 4, 23, 16, 58, 41, 913, DateTimeKind.Local).AddTicks(5958),
+                            CreateDate = new DateTime(2025, 4, 21, 19, 59, 31, 338, DateTimeKind.Local).AddTicks(790),
                             IsActive = true,
                             IsTopMenu = true,
                             Name = "Elektronik",
@@ -229,7 +232,7 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreateDate = new DateTime(2025, 4, 23, 16, 58, 41, 913, DateTimeKind.Local).AddTicks(6948),
+                            CreateDate = new DateTime(2025, 4, 21, 19, 59, 31, 338, DateTimeKind.Local).AddTicks(1725),
                             IsActive = true,
                             IsTopMenu = true,
                             Name = "Bilgisayar",
