@@ -21,7 +21,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         // GET: Admin/Addresses
         public async Task<IActionResult> Index()
         {
-            var databaseContext = _context.Adresses.Include(a => a.AppUser);
+            var databaseContext = _context.Addresses.Include(a => a.AppUser);
             return View(await databaseContext.ToListAsync());
         }
 
@@ -33,7 +33,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Adresses
+            var address = await _context.Addresses
                 .Include(a => a.AppUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (address == null)
@@ -74,7 +74,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Adresses.FindAsync(id);
+            var address = await _context.Addresses.FindAsync(id);
             if (address == null)
             {
                 return NotFound();
@@ -127,7 +127,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Adresses
+            var address = await _context.Addresses
                 .Include(a => a.AppUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (address == null)
@@ -143,10 +143,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var address = await _context.Adresses.FindAsync(id);
+            var address = await _context.Addresses.FindAsync(id);
             if (address != null)
             {
-                _context.Adresses.Remove(address);
+                _context.Addresses.Remove(address);
             }
 
             await _context.SaveChangesAsync();
@@ -155,7 +155,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
 
         private bool AddressExists(int id)
         {
-            return _context.Adresses.Any(e => e.Id == id);
+            return _context.Addresses.Any(e => e.Id == id);
         }
     }
 }
