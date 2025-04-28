@@ -105,7 +105,7 @@
                                     <div class="card-header">
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                                <input class="form-check-input" type="radio" name="DeliveryAddress" values="@item.AddressGuid" @(item.IsDeliveryAddress ? "checked" : "") />
+                                                <input class="form-check-input" type="radio" name="DeliveryAddress" value="@item.AddressGuid" @(item.IsDeliveryAddress ? "checked" : "") />
                                                 @item.Title
                                             </label>
                                         </div>
@@ -118,7 +118,7 @@
 
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                                <input class="form-check-input" type="radio" name="BillingAddress" values="@item.AddressGuid" @(item.IsBillingAddress ? "checked" : "") />
+                                                <input class="form-check-input" type="radio" name="BillingAddress" value="@item.AddressGuid" @(item.IsBillingAddress ? "checked" : "") />
                                                 Fatura Adresi
                                             </label>
                                         </div>
