@@ -1,15 +1,83 @@
-﻿@model IEnumerable<Product>
+﻿@model IEnumerable<Eticaret.Core.Entities.Product>
 
 @{
-    ViewData["Title"] = "Ürünlerimiz";
+    ViewData["Title"] = "Ürünler";
+    var q = Context.Request.Query["q"];
+    var minPrice = Context.Request.Query["minPrice"];
+    var maxPrice = Context.Request.Query["maxPrice"];
+    var sortBy = Context.Request.Query["sortBy"];
+    var categoryId = Context.Request.Query["categoryId"];
+    var categories = ViewBag.Categories as List<Eticaret.Core.Entities.Category>;
+    var brandId = Context.Request.Query["brandId"];
+    var brands = ViewBag.Brands as List<Eticaret.Core.Entities.Brand>;
 }
 
-<div class"my-5">
-    <h1 class="text-center">Ürünlerimiz</h1>
-    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-        @foreach (var item in Model)
-        {
-            <partial name="_ProductView" model="item" />
-        }
+<div class="container mt-4">
+    <h1 class="text-center">Ürünlerimiz</h1> <hr />
+    <div class="row">
+        <!-- SOL: FİLTRE -->
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h5 class="mb-3">Filtrele</h5>
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label">Min Fiyat</label>
+                        <input type="number" class="form-control" name="minPrice" value="@minPrice" step="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Max Fiyat</label>
+                        <input type="number" class="form-control" name="maxPrice" value="@maxPrice" step="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="categoryId">
+                            <option value="">Tümü</option>
+                            @if (categories != null)
+                            {
+                                foreach (var cat in categories)
+                                {
+                                    <option value="@cat.Id" selected="@(categoryId == cat.Id.ToString())">@cat.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Marka</label>
+                        <select class="form-select" name="brandId">
+                            <option value="">Tümü</option>
+                            @if (brands != null)
+                            {
+                                foreach (var brand in brands)
+                                {
+                                    <option value="@brand.Id" selected="@(brandId == brand.Id.ToString())">@brand.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Sıralama</label>
+                        <select class="form-select" name="sortBy">
+                            <option value="">Seçiniz</option>
+                            <option value="price_asc" selected="@(sortBy == "price_asc")">Fiyat Artan</option>
+                            <option value="price_desc" selected="@(sortBy == "price_desc")">Fiyat Azalan</option>
+                            <option value="name_asc" selected="@(sortBy == "name_asc")">A'dan Z'ye</option>
+                            <option value="name_desc" selected="@(sortBy == "name_desc")">Z'den A'ya</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Filtrele</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SAĞ: ÜRÜNLER -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                @foreach (var item in Model)
+                {
+                    <partial name="_ProductView" model="item" />
+                }
+            </div>
+        </div>
     </div>
 </div>
