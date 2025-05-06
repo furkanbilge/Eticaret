@@ -41,25 +41,27 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             return View(order);
         }
 
-        // GET: Admin/Orders/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        //// GET: Admin/Orders/Create
+        //public IActionResult Create()
+        //{
+        //    return View();
+        //}
 
-        // POST: Admin/Orders/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Order order)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(order);
-        }
+        //// POST: Admin/Orders/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(Order order)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(order);
+        //        await _context.SaveChangesAsync();
+        //        TempData["Success"] = "Sipariş Başarıyla Eklendi!";
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
+        //    return View(order);
+        //}
 
         // GET: Admin/Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -107,8 +109,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         ModelState.AddModelError("","Hata Oluştu!");
                     }
                 }
+                TempData["Success"] = "Sipariş Başarıyla Güncellendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             ViewBag.OrderStates = new SelectList(Enum.GetValues<EnumOrderState>());
             return View(order);
         }
@@ -139,9 +143,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             var order = await _context.Orders.FindAsync(id);
             if (order != null)
             {
+                TempData["Success"] = "Sipariş Başarıyla Silindi!";
                 _context.Orders.Remove(order);
             }
-
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

@@ -48,8 +48,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/AppUsers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AppUser appUser)
@@ -58,8 +56,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             {
                 _context.Add(appUser);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Kullanıcı Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir hata oluştu. Lütfen bilgileri kontrol edin.";
             return View(appUser);
         }
 
@@ -80,8 +80,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/AppUsers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, AppUser appUser)
@@ -97,6 +95,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 {
                     _context.Update(appUser);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Kullanıcı Başarıyla Düzenlendi!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -111,6 +110,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir hata oluştu. Lütfen bilgileri kontrol edin.";
             return View(appUser);
         }
 
@@ -141,9 +141,11 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             if (appUser != null)
             {
                 _context.AppUsers.Remove(appUser);
+                TempData["Success"] = "Kullanıcı başarıyla silindi!";
             }
 
             await _context.SaveChangesAsync();
+            TempData["Error"] = "Bir hata oluştu. Lütfen bilgileri kontrol edin.";
             return RedirectToAction(nameof(Index));
         }
 

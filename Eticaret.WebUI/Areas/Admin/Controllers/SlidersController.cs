@@ -57,8 +57,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 slider.Image = await FileHelper.FileLoaderAsync(Image, "/Img/Slider/");
                 _context.Add(slider);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Slider Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(slider);
         }
 
@@ -114,8 +116,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                TempData["Success"] = "Slider Başarıyla Güncellendi!";
+                return RedirectToAction(nameof(Index));                
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(slider);
         }
 
@@ -149,9 +153,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 {
                     FileHelper.FileRemover(slider.Image, "/Img/Slider/");
                 }
+                TempData["Success"] = "Slider Başarıyla Silindi!";
                 _context.Sliders.Remove(slider);
             }
-
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

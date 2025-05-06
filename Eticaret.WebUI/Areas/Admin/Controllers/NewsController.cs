@@ -48,8 +48,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/News/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(News news, IFormFile? Image)
@@ -59,8 +57,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 news.Image = await FileHelper.FileLoaderAsync(Image, "/Img/News/");
                 _context.Add(news);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Kampanya veya Duyuru Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(news);
         }
 
@@ -81,8 +81,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/News/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, News news, IFormFile? Image, bool cbResmiSil = false)
@@ -118,8 +116,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Kampanya veya Duyuru Başarıyla Güncellendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(news);
         }
 
@@ -153,9 +153,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 {
                     FileHelper.FileRemover(news.Image, "/Img/News/");
                 }
+                TempData["Success"] = "Kampanya veya Duyuru Başarıyla Silindi!";
                 _context.News.Remove(news);
             }
-
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

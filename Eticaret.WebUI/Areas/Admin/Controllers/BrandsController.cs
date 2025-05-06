@@ -57,8 +57,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 brand.Logo = await FileHelper.FileLoaderAsync(Logo);
                 _context.Add(brand);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Marka Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(brand);
         }
 
@@ -79,8 +81,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/Brands/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Brand brand, IFormFile? Logo, bool cbResmiSil = false)
@@ -104,6 +104,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         brand.Logo = await FileHelper.FileLoaderAsync(Logo);
                     }
                     _context.Update(brand);
+                    TempData["Success"] = "Marka Başarıyla Güncellendi!";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -119,6 +120,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(brand);
         }
 
@@ -152,10 +154,12 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 {
                     FileHelper.FileRemover(brand.Logo);
                 }
+                TempData["Success"] = "Marka Başarıyla Silindi!";
                 _context.Brands.Remove(brand);
             }
 
             await _context.SaveChangesAsync();
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return RedirectToAction(nameof(Index));
         }
 

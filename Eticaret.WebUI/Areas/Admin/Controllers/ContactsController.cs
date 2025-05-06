@@ -62,8 +62,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Kayıt Başarıyla Güncellendi!";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(contact);
         }
 
@@ -90,9 +92,11 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             if (contact != null)
             {
                 _context.Contacts.Remove(contact);
+                TempData["Success"] = "Kayıt Başarıyla Silindi!";
             }
 
             await _context.SaveChangesAsync();
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return RedirectToAction(nameof(Index));
         }
 

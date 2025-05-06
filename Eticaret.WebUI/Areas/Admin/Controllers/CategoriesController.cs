@@ -50,8 +50,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category, IFormFile? Image)
@@ -61,9 +59,11 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 category.Image = await FileHelper.FileLoaderAsync(Image, "/Img/Categories/");
                 await _context.AddAsync(category);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Kategori Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Kategoriler = new SelectList(_context.Categories, "Id", "Name");
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(category);
         }
 
@@ -85,8 +85,6 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Category category, IFormFile? Image, bool cbResmiSil = false)
@@ -109,6 +107,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         category.Image = await FileHelper.FileLoaderAsync(Image, "/Img/Categories/");
                     }
                     _context.Update(category);
+                    TempData["Success"] = "Kategori Başarıyla Güncellendi!";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -124,6 +123,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             ViewBag.Kategoriler = new SelectList(_context.Categories, "Id", "Name");
             return View(category);
         }
@@ -158,9 +158,10 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 {
                     FileHelper.FileRemover(category.Image, "/Img/Categories/");
                 }
+                TempData["Success"] = "Kategori Başarıyla Silindi!";
                 _context.Categories.Remove(category);
             }
-
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

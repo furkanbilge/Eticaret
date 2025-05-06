@@ -63,10 +63,12 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 product.Image = await FileHelper.FileLoaderAsync(Image, "/Img/Products/");
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Ürün Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(product);
         }
 
@@ -111,6 +113,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                         product.Image = await FileHelper.FileLoaderAsync(Image, "/Img/Products/");
                     }
                     _context.Update(product);
+                    TempData["Success"] = "Ürün başarıyla güncellendi!";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -128,6 +131,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             }
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            TempData["Error"] = "Bir hata oluştu. Lütfen bilgileri kontrol edin.";
             return View(product);
         }
 
@@ -160,9 +164,11 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             if (product != null)
             {
                 _context.Products.Remove(product);
+                TempData["Success"] = "Ürün başarıyla silindi!";
             }
 
             await _context.SaveChangesAsync();
+            TempData["Error"] = "Bir hata oluştu. Lütfen bilgileri kontrol edin.";
             return RedirectToAction(nameof(Index));
         }
 

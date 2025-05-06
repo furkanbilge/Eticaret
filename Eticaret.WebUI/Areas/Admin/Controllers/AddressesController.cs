@@ -60,9 +60,11 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             {
                 _context.Add(address);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Adres Başarıyla Eklendi!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AppUserId"] = new SelectList(_context.AppUsers, "Id", "Email", address.AppUserId);
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(address);
         }
 
@@ -84,11 +86,9 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/Addresses/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,City,Disctrict,OpenAddress,IsActive,IsBillingAddress,IsDeliveryAddress,AppUserId")] Address address)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,City,District,OpenAddress,IsActive,IsBillingAddress,IsDeliveryAddress,AppUserId")] Address address)
         {
             if (id != address.Id)
             {
@@ -101,6 +101,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 {
                     _context.Update(address);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Adres Başarıyla Güncellendi!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,6 +117,7 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AppUserId"] = new SelectList(_context.AppUsers, "Id", "Email", address.AppUserId);
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return View(address);
         }
 
@@ -147,9 +149,11 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
             if (address != null)
             {
                 _context.Addresses.Remove(address);
+                TempData["Success"] = "Adres Başarıyla Silindi!";
             }
 
             await _context.SaveChangesAsync();
+            TempData["Error"] = "Bir Hata oluştu! Lütfen Bilgileri Kontrol Edin!";
             return RedirectToAction(nameof(Index));
         }
 
