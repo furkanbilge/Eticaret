@@ -130,14 +130,14 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 4, 26, 14, 14, 54, 900, DateTimeKind.Local).AddTicks(18),
+                            CreateDate = new DateTime(2025, 5, 7, 17, 20, 18, 787, DateTimeKind.Local).AddTicks(9771),
                             Email = "admin@eticaret.com",
                             IsActive = true,
                             IsAdmin = true,
                             Name = "Test",
                             Password = "123456",
                             Surname = "User",
-                            UserGuid = new Guid("785fab87-c9f4-4026-af69-25c8514f6017"),
+                            UserGuid = new Guid("02c7b198-b815-4f5d-9f35-ffe4ad1e8c41"),
                             UserName = "Admin"
                         });
                 });
@@ -219,7 +219,7 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 4, 26, 14, 14, 54, 902, DateTimeKind.Local).AddTicks(9321),
+                            CreateDate = new DateTime(2025, 5, 7, 17, 20, 18, 790, DateTimeKind.Local).AddTicks(7069),
                             IsActive = true,
                             IsTopMenu = true,
                             Name = "Elektronik",
@@ -229,7 +229,7 @@ namespace Eticaret.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreateDate = new DateTime(2025, 4, 26, 14, 14, 54, 903, DateTimeKind.Local).AddTicks(258),
+                            CreateDate = new DateTime(2025, 5, 7, 17, 20, 18, 790, DateTimeKind.Local).AddTicks(8019),
                             IsActive = true,
                             IsTopMenu = true,
                             Name = "Bilgisayar",
@@ -441,6 +441,40 @@ namespace Eticaret.Data.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Eticaret.Core.Entities.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Review");
+                });
+
             modelBuilder.Entity("Eticaret.Core.Entities.Slider", b =>
                 {
                     b.Property<int>("Id")
@@ -524,9 +558,30 @@ namespace Eticaret.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Eticaret.Core.Entities.Review", b =>
+                {
+                    b.HasOne("Eticaret.Core.Entities.AppUser", "AppUser")
+                        .WithMany("Reviews")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Eticaret.Core.Entities.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Eticaret.Core.Entities.AppUser", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("Eticaret.Core.Entities.Brand", b =>
@@ -542,6 +597,11 @@ namespace Eticaret.Data.Migrations
             modelBuilder.Entity("Eticaret.Core.Entities.Order", b =>
                 {
                     b.Navigation("OrderLines");
+                });
+
+            modelBuilder.Entity("Eticaret.Core.Entities.Product", b =>
+                {
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

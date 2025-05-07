@@ -137,11 +137,16 @@ namespace Eticaret.WebUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var appUser = await _context.AppUsers.FindAsync(id);
+            //var appUser = await _context.AppUsers.FindAsync(id);
+            var appUser = await _context.AppUsers.Include(u => u.Addresses).FirstOrDefaultAsync(u => u.Id == id);
             if (appUser != null)
             {
+                // Adresleri silme
+                _context.Addresses.RemoveRange(appUser.Addresses);
+
+                // Kullanıcıyı silme
                 _context.AppUsers.Remove(appUser);
-                TempData["Success"] = "Kullanıcı başarıyla silindi!";
+                TempData["Success"] = "Kullanıcı ve bağlı adresler başarıyla silindi!";
             }
 
             await _context.SaveChangesAsync();

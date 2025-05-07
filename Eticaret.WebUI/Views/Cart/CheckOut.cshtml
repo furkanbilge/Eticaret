@@ -139,7 +139,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <label>Kart Numarası</label>
-                            <input type="number" name="CardNumber" class="form-control" required />
+                            <input type="text" id="CardNumber" name="CardNumber" class="form-control" maxlength="16" minlength="16" pattern="\d{16}" required title="Kredi kartı numarası 16 haneli olmalıdır." />
                         </div>
                     </div>
                     <div class="row">
@@ -181,7 +181,7 @@
                     <div class="row">
                         <div class="col-md-2">
                             <label>CVV</label>
-                            <input type="number" name="CVV" class="form-control" required />
+                            <input type="text" id="CVV" name="CVV" class="form-control" maxlength="3" minlength="3" pattern="\d{3}" required title="CVV 3 haneli olmalıdır." />
                         </div>
                     </div>
                     <button type="submit" class="btn btn-success mt-2">Ödeme Yap</button>

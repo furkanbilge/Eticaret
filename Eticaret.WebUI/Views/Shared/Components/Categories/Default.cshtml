@@ -1,20 +1,196 @@
 ﻿@model IEnumerable<Category>
+<style>
+    .kategori-dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        width: max-content;
+    }
+
+    .has-submenu {
+        position: relative;
+    }
+
+    .kategori-with-submenu:hover {
+        background-color: #f8f9fa;
+    }
+
+    .submenu-container {
+        position: absolute;
+        left: 100%;
+        top: -10px; /* Ana menü öğesine göre hizalamak için biraz yukarı taşı */
+        min-width: 400px;
+        z-index: 1001;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        background-color: #fff;
+        border-radius: 0.25rem;
+    }
+
+        .submenu-container .card {
+            border: none;
+        }
+
+        .submenu-container .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+    .submenu-active {
+        display: block !important;
+    }
+
+</style>
+
 @{
     foreach (var anaKategori in Model.Where(c => c.ParentId == 0))
     {
-        <div class="dropdown">
+        <div class="dropdown kategori-dropdown">
             <a class="dropdown-toggle nav-link text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 @anaKategori.Name
             </a>
-            @if (Model.Where(c => c.ParentId == anaKategori.Id) is not null && Model.Where(c => c.ParentId == anaKategori.Id).Count() > 0)
+            @if (Model.Where(c => c.ParentId == anaKategori.Id).Any())
             {
                 <ul class="dropdown-menu">
                     @foreach (var altKategori in Model.Where(c => c.ParentId == anaKategori.Id))
                     {
-                        <li><a class="dropdown-item" href="/Categories/Index/@altKategori.Id">@altKategori.Name</a></li>
+                        @if (Model.Where(c => c.ParentId == altKategori.Id).Any())
+                        {
+                            <li class="has-submenu">
+                                <a class="dropdown-item kategori-with-submenu" data-kategori-id="@altKategori.Id" href="/Categories/Index/@altKategori.Id">
+                                    @altKategori.Name
+                                    <i class="bi bi-chevron-right float-end"></i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a class="dropdown-item" href="/Categories/Index/@altKategori.Id">
+                                    @altKategori.Name
+                                </a>
+                            </li>
+                        }
                     }
                 </ul>
+
+                <!-- Alt kategorilerin yan kutularını menünün dışına taşıyalım -->
+                @foreach (var altKategori in Model.Where(c => c.ParentId == anaKategori.Id))
+                {
+                    @if (Model.Where(c => c.ParentId == altKategori.Id).Any())
+                    {
+                        <div class="submenu-container d-none" id="submenu-@altKategori.Id">
+                            <div class="card">
+                                <div class="card-header">
+                                    <strong>@altKategori.Name Alt Kategorileri</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        @foreach (var altAltKategori in Model.Where(c => c.ParentId == altKategori.Id))
+                                        {
+                                            <div class="col-md-4 mb-2">
+                                                <a class="dropdown-item" href="/Categories/Index/@altAltKategori.Id">
+                                                    @altAltKategori.Name
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
             }
         </div>
     }
 }
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Alt kategorilere sahip menü öğeleri için
+        const kategoriItems = document.querySelectorAll('.kategori-with-submenu');
+
+        kategoriItems.forEach(item => {
+            const kategoriId = item.getAttribute('data-kategori-id');
+            const submenu = document.getElementById(`submenu-${kategoriId}`);
+
+            // Hover eventi için
+            item.addEventListener('mouseenter', function() {
+                // Tüm açık alt menüleri kapat
+                document.querySelectorAll('.submenu-container').forEach(el => {
+                    el.classList.add('d-none');
+                    el.classList.remove('submenu-active');
+                });
+
+                // Bu alt menüyü aç
+                if (submenu) {
+                    // Yan kutunun konumunu ayarla
+                    const rect = item.getBoundingClientRect();
+                    const parentRect = item.closest('.dropdown-menu').getBoundingClientRect();
+
+                    // Kutunun konumunu dinamik olarak hesapla
+                    submenu.style.top = (rect.top - parentRect.top) + 'px';
+                    submenu.style.left = parentRect.width + 'px'; // Ana menünün genişliğinden sonra başla
+
+                    submenu.classList.remove('d-none');
+                    submenu.classList.add('submenu-active');
+                }
+            });
+
+            // Mobil cihazlar için tıklama desteği
+            item.addEventListener('click', function(e) {
+                // Eğer alt menü zaten açıksa, normal link davranışına izin ver
+                if (submenu && !submenu.classList.contains('submenu-active')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Tüm açık alt menüleri kapat
+                    document.querySelectorAll('.submenu-container').forEach(el => {
+                        el.classList.add('d-none');
+                        el.classList.remove('submenu-active');
+                    });
+
+                    // Bu alt menüyü aç
+                    const rect = item.getBoundingClientRect();
+                    const parentRect = item.closest('.dropdown-menu').getBoundingClientRect();
+
+                    submenu.style.top = (rect.top - parentRect.top) + 'px';
+                    submenu.style.left = parentRect.width + 'px';
+
+                    submenu.classList.remove('d-none');
+                    submenu.classList.add('submenu-active');
+                }
+            });
+        });
+
+        // Ana dropdown menüden çıkıldığında alt menüleri kapat
+        const dropdowns = document.querySelectorAll('.kategori-dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('mouseleave', function() {
+                setTimeout(() => {
+                    // Eğer fare hala submenu üzerinde değilse kapat
+                    if (!document.querySelector('.submenu-container:hover')) {
+                        document.querySelectorAll('.submenu-container').forEach(el => {
+                            el.classList.add('d-none');
+                            el.classList.remove('submenu-active');
+                        });
+                    }
+                }, 100);
+            });
+        });
+
+        // Submenu üzerine hover olduğunda açık kalsın
+        const submenus = document.querySelectorAll('.submenu-container');
+        submenus.forEach(submenu => {
+            submenu.addEventListener('mouseenter', function() {
+                this.classList.remove('d-none');
+                this.classList.add('submenu-active');
+            });
+
+            submenu.addEventListener('mouseleave', function() {
+                this.classList.add('d-none');
+                this.classList.remove('submenu-active');
+            });
+        });
+    });
+</script>

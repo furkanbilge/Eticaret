@@ -6,44 +6,42 @@
     }
 
         .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
+
+    .price {
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    .name {
+        font-size: 1rem;
+        font-weight: 500;
+    }
 </style>
 
-
-<div class="col mb-5">
-    <div class="card h-100 border-6 shadow-sm product-card position-relative">
-        <!-- Sale badge-->
-        <div class="badge position-absolute" style="top: 0.5rem; right: 0.5rem">
-            <form asp-action="Add" asp-controller="Favorites">
+<div class="col mb-4">
+    <div class="card h-100 shadow-sm border-0 product-card">
+        <div class="position-relative">
+            <a href="/Products/Details/@Model.Id">
+                <img class="card-img-top product-img" src="~/Img/Products/@Model.Image" alt="@Model.Name" />
+            </a>
+            <form asp-action="Add" asp-controller="Favorites" class="position-absolute top-0 end-0 m-2">
                 <input type="hidden" name="ProductId" value="@Model.Id" />
-                <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm" type="submit" style="box-shadow: none">
+                <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="submit" title="Favorilere Ekle">
                     <i class="bi bi-heart text-danger"></i>
                 </button>
             </form>
         </div>
-        <!-- Product image-->
-        <a href="/Products/Details/@Model.Id">
-            <img class="card-img-top" src="~/Img/Products/@Model.Image" alt="@Model.Name">
-        </a>
-        <!-- Product details-->
-        <div class="card-body p-4">
-            <div class="text-center">
-                <!-- Product name-->
-                <h5 class="card-title fw-semibold text-truncate">@Model.Name</h5>
-                <!-- Fiyat -->
-                <p class="fw-bold text-primary mb-2">@Model.Price.ToString("N0") ₺</p>
-            </div>
+        <div class="card-body text-center">
+            <h6 class="name text-truncate">@Model.Name</h6>
+            <div class="price">@Model.Price.ToString("C2")</div>
         </div>
-        <!-- Product actions-->
-        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-            <form action="/Cart/Add" method="post">
+        <div class="card-footer bg-white border-0 text-center">
+            <form asp-action="Add" asp-controller="Cart">
                 <input type="hidden" name="ProductId" value="@Model.Id" />
-                <div class="text-center"><button class="btn btn-outline-primary mt-auto" type="submit">
-                        <i class="bi-cart-fill me-1"></i> Sepete Ekle
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-sm btn-outline-primary w-100">Sepete Ekle</button>
             </form>
         </div>
     </div>

@@ -4,52 +4,114 @@
     ViewData["Title"] = Model.Product.Name;
 }
 
+<style>
+    .description-box {
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+        max-width: 600px;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
 
-<div class="container mt-5">
-    <div class="row g-5">
-        <!-- Sol: Ürün Görseli -->
+    .description-text {
+        max-height: 150px;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        color: #555;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .description-toggle {
+        position: absolute;
+        bottom: 10px;
+        right: 15px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #0d6efd;
+        background-color: #fff;
+        padding: 2px 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: color 0.2s ease;
+        z-index: 2;
+    }
+
+        .description-toggle:hover {
+            color: #084298;
+            text-decoration: underline;
+        }
+</style>
+
+<div class="container py-5">
+    <div class="row g-5 align-items-center">
+        <!-- Ürün Görseli -->
         <div class="col-md-6 text-center">
-            <img src="~/Img/Products/@Model.Product.Image" class="img-fluid rounded shadow-sm" alt="@Model.Product.Name" style="max-height: 400px; object-fit: contain;" />
+            <img src="~/Img/Products/@Model.Product.Image" id="zoomImage" class="img-fluid" style="max-width: 100%;" />
+            <div id="zoomLens"></div>
         </div>
 
-        <!-- Sağ: Ürün Bilgileri -->
+        <!-- Ürün Bilgileri -->
         <div class="col-md-6">
-            <h2 class="fw-bold">@Model.Product.Name</h2>
-            <p class="text-muted">@Model.Product.Category?.Name - @Model.Product.Brand?.Name</p>
-            <p class="text-muted">SKU: @Model.Product.ProductCode</p>
-            @* <div class="small mb-1">SKU: @Model.Product.ProductCode</div> *@
-
-            <h4 class="text-primary fw-bold mb-3">@Model.Product.Price.ToString("N0") ₺</h4>
-
-            <p>@Model.Product.Description</p>
-
-            <p>
-                <span class="badge bg-success">Stok: @(Model.Product.Stock > 0 ? "Var" : "Tükendi")</span>
+            <h2 class="fw-bold mb-3">@Model.Product.Name</h2>
+            <p class="text-muted mb-1">
+                <i class="bi bi-tag"></i> @Model.Product.Category?.Name
+                <span class="mx-2">|</span>
+                <i class="bi bi-building"></i> @Model.Product.Brand?.Name
+            </p>
+            <p class="text-muted mb-3">
+                <small class="text-secondary"> <i class="bi bi-upc-scan"></i> Ürün Kodu: @Model.Product.ProductCode</small>
             </p>
 
-            <form asp-controller="Cart" asp-action="Add" method="post" class="mt-4">
+            <h3 class="text-success fw-semibold mb-4">
+                @Model.Product.Price.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"))
+            </h3>
+
+            <div class="description-box mt-3">
+                <p id="productDescription" class="description-text mb-0">
+                    @Model.Product.Description
+                </p>
+                <a href="javascript:void(0);" id="toggleDescription" class="description-toggle">Daha fazla</a>
+            </div>
+
+            <div class="mb-3 mt-3">
+                @if (Model.Product.Stock > 0)
+                {
+                    <span class="badge bg-success p-2 px-3">Stokta Var</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger p-2 px-3">Stokta Yok</span>
+                }
+            </div>
+
+            <form asp-controller="Cart" asp-action="Add" method="post">
                 <input type="hidden" name="ProductId" value="@Model.Product.Id" />
-                <div class="input-group" style="max-width: 200px;">
-                    <input type="number" name="quantity" value="1" min="1" class="form-control" />
-                    <button type="submit" class="btn btn-primary">Sepete Ekle</button>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="number" name="quantity" value="1" min="1" max="@Model.Product.Stock"
+                           class="form-control text-center" style="width: 80px;" required />
+
+                    <button type="submit" class="btn btn-primary d-flex align-items-center">
+                        <i class="bi bi-cart-plus me-1"></i> Sepete Ekle
+                    </button>
+
+                    <a asp-controller="Favorites" asp-action="Add" asp-route-id="@Model.Product.Id"
+                       class="btn btn-outline-danger d-flex align-items-center">
+                        <i class="bi bi-heart me-1"></i> Favorilere Ekle
+                    </a>
                 </div>
-            </form>
-            <form asp-action="Add" asp-controller="Favorites" class="d-flex mt-3">
-                <input type="hidden" name="ProductId" value="@Model.Product.Id" />
-                <button class="btn btn-outline-danger flex-shrink-0" type="submit">
-                    <i class="bi-heart me-1"></i>
-                    Favorilere Ekle
-                </button>
             </form>
         </div>
     </div>
 
-    <!-- Alt: Benzer Ürünler -->
+    <!-- Benzer Ürünler -->
     @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
     {
         <hr class="my-5" />
         <h4 class="mb-4">Benzer Ürünler</h4>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             @foreach (var item in Model.RelatedProducts)
             {
                 <partial name="_ProductView" model="item" />
@@ -57,3 +119,20 @@
         </div>
     }
 </div>
+
+<script>
+    const desc = document.getElementById("productDescription");
+    const toggleBtn = document.getElementById("toggleDescription");
+    let expanded = false;
+
+    toggleBtn.addEventListener("click", () => {
+        expanded = !expanded;
+        if (expanded) {
+            desc.style.maxHeight = "1000px";
+            toggleBtn.textContent = "Daha az";
+        } else {
+            desc.style.maxHeight = "150px";
+            toggleBtn.textContent = "Daha fazla";
+        }
+    });
+</script>

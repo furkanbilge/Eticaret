@@ -3,7 +3,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Eticaret.WebUI</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Eticaret Web Sitesi</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
             aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -28,7 +28,6 @@
                             <li><a class="dropdown-item" href="/Account">Bilgilerim</a></li>
                             <li><a class="dropdown-item" href="/MyAddresses">Adreslerim</a></li>
                             <li><a class="dropdown-item" href="/Account/MyOrders">Siparişlerim</a></li>
-                            <li><a class="dropdown-item" href="/Account/">Değerlendirmelerim</a></li>
                             <li class="text-center"><a class="btn btn-danger" href="/Account/SignOut">Çıkış Yap</a></li>
                         </ul>
                     </div>
@@ -74,12 +73,6 @@
                             <ul class="dropdown-menu">
                                 @foreach (var item in cart.CartLines)
                                 {
-                                    // <li class="dropdown-item d-flex justify-content-between align-items-center">
-                                    //     <a class="dropdown-item cart-product-name text-truncate" href="/Products/Details/@item.Product.Id">
-                                    //         <img src="/Img/Products/@item.Product.Image" alt="" height="40" />
-                                    //         @item.Product.Name
-                                    //     </a>
-                                    // </li>
                                     <li class="dropdown-item d-flex justify-content-between align-items-center">
                                         <a class="dropdown-item cart-product-name text-truncate" href="/Products/Details/@item.Product.Id" style="max-width: 250px;" >
                                             <img src="/Img/Products/@item.Product.Image" alt="" height="40" />
