@@ -40,6 +40,20 @@
         display: block !important;
     }
 
+    .submenu-container {
+        min-width: 250px; /* Genişliği daralt */
+    }
+
+        .submenu-container .dropdown-item {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.95rem;
+        }
+
+    .card-header strong {
+        font-size: 1rem;
+        color: #333;
+    }
+
 </style>
 
 @{
@@ -81,20 +95,20 @@
                     {
                         <div class="submenu-container d-none" id="submenu-@altKategori.Id">
                             <div class="card">
-                                <div class="card-header">
-                                    <strong>@altKategori.Name Alt Kategorileri</strong>
+                                <div class="card-header text-center">
+                                    <strong><i class="bi bi-layers me-2"></i>@altKategori.Name Alt Kategorileri</strong>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row">
+                                    <ul class="list-unstyled mb-0">
                                         @foreach (var altAltKategori in Model.Where(c => c.ParentId == altKategori.Id))
                                         {
-                                            <div class="col-md-4 mb-2">
+                                            <li>
                                                 <a class="dropdown-item" href="/Categories/Index/@altAltKategori.Id">
                                                     @altAltKategori.Name
                                                 </a>
-                                            </div>
+                                            </li>
                                         }
-                                    </div>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
